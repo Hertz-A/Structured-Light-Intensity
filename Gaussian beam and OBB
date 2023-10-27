@@ -1,0 +1,61 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+rho_grego = '\u03C1'
+omega_zero = '\u03C9\u2080'
+z_com_indice_R = 'zᵣ'
+
+#lamb = 780e-9 #comprimento de onda do laser
+#NA = 0.77 #NA da lente do tweezer
+#P_0 = 100e-3
+#z_r = w_0/NA
+#z = z_r #posição no eixo z. para o obb, é interessante analizar essa posição como sendo igual a +-z_r
+#w_0 = 2.4e-3 #tamanho do feixe na entrada do tweezer
+#I_0 = 2*P_0/(np.pi*w**2)
+
+z_r = 1
+z = z_r
+
+w_0 = 1
+w = w_0*(1 + (z/z_r)**2)**(1/2) #beam waist
+I_0 = 1
+
+gouy_phase = np.arctan(z/z_r)
+
+r = np.linspace(-2, 2 , 500) #distância radial no plano perpendicular a z
+
+#----------------------------------------------------------------------------#
+#Gaussiano
+U_g = -I_0*((w_0**2)/(w**2))* np.exp((-2*(r**2))/(w**2)) #potencial do feixe gaussiano
+U_g_aprox = -I_0*((w_0**2)/(w**2))*(1-(2*(r**2)/(w**2))) #potencial aproximado/expansão em taylor ao redor da origem
+
+fig, ax = plt.subplots()
+
+ax.plot(r, U_g, linewidth=2.0, label='Complete Potential')
+ax.plot(r, U_g_aprox, linewidth=2.0, label='Harmonic approximation')
+
+plt.title("Gaussian Potential (z = " + z_com_indice_R +")")
+plt.xlabel(rho_grego + "/" + omega_zero)
+plt.ylabel("Potential [a.u.]")
+ax.set(xlim=(-2,2), ylim=(-1,1))
+ax.legend()
+
+#----------------------------------------------------------------------------#
+
+#OBB
+
+U_obb = - I_0 *((w_0**2)/(w**2))* (np.exp((-2*(r**2))/(w**2)))*((1 - np.cos(2*gouy_phase))*(1 - 2*(r**2)) + 2*(r**4)/w**4) #potencial do OBB
+U_obb_aprox = - I_0 *((w_0**2)/(w**2))* ((1 - np.cos(2*gouy_phase))*(1 - 4*(r**2)/(w**2))) #potencial aproximado/expansão em taylor ao redor da origem
+
+fig, ax = plt.subplots()
+
+ax.plot(r, U_obb, linewidth=2.0, label='Complete Potential')
+ax.plot(r, U_obb_aprox, linewidth=2.0, label='Harmonic approximation')
+
+plt.title("OBB Potential (z = "+ z_com_indice_R +")")
+plt.xlabel(rho_grego + "/" + omega_zero)
+plt.ylabel("Potential [a.u.]")
+ax.set(xlim=(-2,2), ylim=(-1,1))
+ax.legend()
+
+plt.show()
